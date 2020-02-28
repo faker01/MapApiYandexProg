@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 
-SCALE = 10
+SCALE = 0.002
 LON = 37.530887
 LAT = 55.703118
 
@@ -28,7 +28,7 @@ def get_img_from_response(content):
 
 
 def PIL_to_pygame(img):
-    img = img.convert('RGB')
+    img = img.convert('RGB').resize((w, h))
     return pygame.image.fromstring(img.tobytes("raw", 'RGB'), img.size, 'RGB')
 
 
