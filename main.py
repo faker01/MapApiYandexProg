@@ -49,9 +49,10 @@ while True:
             if e.key == pygame.K_ESCAPE:
                 quit()
             if e.key == pygame.K_PAGEUP:
-                SCALE += 1
+                SCALE = min(17, SCALE + 1)
             if e.key == pygame.K_PAGEDOWN:
-                SCALE -= 1
+                SCALE = max(0, SCALE - 1)
+                
             MAP = get_map()
 
     win.fill((0, 0, 0))
