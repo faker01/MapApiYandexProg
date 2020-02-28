@@ -22,19 +22,26 @@ def search_map(longitude, lattitude, delta):
     return response.content
 
 
-def get_img_from_respone(content):
+def get_img_from_response(content):
     image = Image.open(BytesIO(content))
     return image
 
 
 def PIL_to_pygame(img):
-    return pygame.image.fromstring(img.tobytes("raw", 'RGB'), img.size, 'RGB')
+    print(img.getpixel((0, 0)))
+    return pygame.image.fromstring(img.tobytes("raw", 'P'), img.size, 'P')
 
+
+# micro mainloop
+response = search_map(LON, LAT, SCALE)
+pil_image = get_img_from_response(response)
+map_image = PIL_to_pygame(pil_image)
 
 while True:
     for e in pygame.event.get():
         if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
             quit()
     win.fill((0, 0, 0))
+    win.blit(map_image, (0, 0))
     pygame.display.flip()
     clock.tick(rate)
