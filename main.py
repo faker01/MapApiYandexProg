@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 
-SCALE = 0.002
+SCALE = 10
 LON = 37.530887
 LAT = 55.703118
 
