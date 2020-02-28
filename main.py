@@ -1,14 +1,22 @@
 import pygame
+from PIL import Image
+from io import BytesIO
 
 w, h = 800, 600
 rate = 64
+pygame.init()
 clock = pygame.time.Clock()
 win = pygame.display.set_mode((w, h))
 
 
+def get_img_from_respone(content):
+    image = Image.open(BytesIO(content))
+    return image
+
+
 while True:
     for e in pygame.event.get():
-        if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == 27):
+        if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
             quit()
     win.fill((0, 0, 0))
     pygame.display.flip()
