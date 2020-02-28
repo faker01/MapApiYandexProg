@@ -2,6 +2,11 @@ import pygame
 from PIL import Image
 from io import BytesIO
 
+
+SCALE = 0.002
+LON = 37.530887
+LAT = 55.703118
+
 w, h = 800, 600
 rate = 64
 pygame.init()
