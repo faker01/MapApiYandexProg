@@ -28,8 +28,8 @@ def get_img_from_response(content):
 
 
 def PIL_to_pygame(img):
-    print(img.getpixel((0, 0)))
-    return pygame.image.fromstring(img.tobytes("raw", 'P'), img.size, 'P')
+    img = img.convert('RGB')
+    return pygame.image.fromstring(img.tobytes("raw", 'RGB'), img.size, 'RGB')
 
 
 # micro mainloop
