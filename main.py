@@ -14,6 +14,13 @@ clock = pygame.time.Clock()
 win = pygame.display.set_mode((w, h))
 
 
+def search_map(longitude, lattitude, delta):
+    req = 'https://static-maps.yandex.ru/1.x/?ll={},{}&spn={},{}&l=map'.format(longitude, lattitude,
+                                                                               delta, delta)
+    response = requests.get(req)
+    return response.content
+
+
 def get_img_from_respone(content):
     image = Image.open(BytesIO(content))
     return image
