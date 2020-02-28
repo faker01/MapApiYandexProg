@@ -14,6 +14,10 @@ def get_img_from_respone(content):
     return image
 
 
+def PIL_to_pygame(img):
+    return pygame.image.fromstring(img.tobytes("raw", 'RGB'), img.size, 'RGB')
+
+
 while True:
     for e in pygame.event.get():
         if e.type == pygame.QUIT or (e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE):
