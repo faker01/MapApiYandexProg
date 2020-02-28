@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 
-SCALE = 0.02
+SCALE = 17
 LON = 37.530887
 LAT = 55.703118
 
@@ -16,8 +16,8 @@ win = pygame.display.set_mode((w, h))
 
 
 def search_map(longitude, lattitude, delta):
-    req = 'https://static-maps.yandex.ru/1.x/?ll={},{}&spn={},{}&l=map'.format(longitude, lattitude,
-                                                                               delta, delta)
+    req = 'https://static-maps.yandex.ru/1.x/?ll={},{}&z={}&l=map'.format(longitude, lattitude,
+                                                                               delta)
     response = requests.get(req)
     return response.content
 
