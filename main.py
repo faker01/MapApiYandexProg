@@ -52,7 +52,14 @@ while True:
                 SCALE = min(17, SCALE + 1)
             if e.key == pygame.K_PAGEDOWN:
                 SCALE = max(0, SCALE - 1)
-                
+            if e.key == pygame.K_LEFT:
+                LON = (LON - 0.0005 * (18 - SCALE)) % 360
+            if e.key == pygame.K_RIGHT:
+                LON = (LON + 0.0005 * (18 - SCALE)) % 360
+            if e.key == pygame.K_UP:
+                LAT = (LAT + 0.0005 * (18 - SCALE)) % 360
+            if e.key == pygame.K_DOWN:
+                LAT = (LAT - 0.0005 * (18 - SCALE)) % 360
             MAP = get_map()
 
     win.fill((0, 0, 0))
