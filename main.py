@@ -1,7 +1,3 @@
-
-
-
-
 import pygame
 
 w, h = 800, 600
