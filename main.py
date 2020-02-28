@@ -4,11 +4,11 @@ from PIL import Image
 from io import BytesIO
 
 
-SCALE = 0.002
+SCALE = 0.02
 LON = 37.530887
 LAT = 55.703118
 
-w, h = 800, 600
+w, h = 600, 450
 rate = 64
 pygame.init()
 clock = pygame.time.Clock()
@@ -24,11 +24,12 @@ def search_map(longitude, lattitude, delta):
 
 def get_img_from_response(content):
     image = Image.open(BytesIO(content))
+    print(image.size)
     return image
 
 
 def PIL_to_pygame(img):
-    img = img.convert('RGB').resize((w, h))
+    img = img.convert('RGB')
     return pygame.image.fromstring(img.tobytes("raw", 'RGB'), img.size, 'RGB')
 
 
