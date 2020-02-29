@@ -23,7 +23,8 @@ button_search = Modules.Button(675, 75, 350, 32, 'Искать')
 def search_map(longitude, lattitude, delta):
     params = {'ll': ','.join([str(longitude), str(lattitude)]),
               'z': str(delta),
-              'l': types_of_map[current_map]}
+              'l': types_of_map[current_map],
+              'pt': ','.join([str(longitude), str(lattitude), 'pm2rdm'])}
     req = 'https://static-maps.yandex.ru/1.x/'
     response = requests.get(req, params=params)
     return response.content
