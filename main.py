@@ -7,6 +7,8 @@ import Modules
 SCALE = 10
 LON = 0
 LAT = 0
+LON_marker = 0
+LAT_marker = 0
 
 w, h = 1050, 500
 rate = 60
@@ -20,11 +22,11 @@ search_bar = Modules.InputBox(675, 25, 350, 32)
 button_search = Modules.Button(675, 75, 350, 32, 'Искать')
 
 
-def search_map(longitude, lattitude, delta):
+def search_map(longitude, lattitude, longitude_marker, lattitude_marker, delta):
     params = {'ll': ','.join([str(longitude), str(lattitude)]),
               'z': str(delta),
               'l': types_of_map[current_map],
-              'pt': ','.join([str(longitude), str(lattitude), 'pm2rdm'])}
+              'pt': ','.join([str(longitude_marker), str(lattitude_marker), 'pm2rdm'])}
     req = 'https://static-maps.yandex.ru/1.x/'
     response = requests.get(req, params=params)
     return response.content
@@ -41,7 +43,7 @@ def PIL_to_pygame(img):
 
 
 def get_map():
-    response = search_map(LON, LAT, SCALE)
+    response = search_map(LON, LAT, LON_marker, LAT_marker, SCALE)
     pil_image = get_img_from_response(response)
     map_image = PIL_to_pygame(pil_image)
     return map_image
@@ -71,10 +73,12 @@ while True:
     for event in pygame.event.get():
         if search_bar.handle_event(event):
             LON, LAT = get_coords(search_bar.text)
+            LON_marker, LAT_marker = LON, LAT
             search_bar.text = ''
         search_bar.update()
         if button_search.handle_event(event):
             LON, LAT = get_coords(search_bar.text)
+            LON_marker, LAT_marker = LON, LAT
             search_bar.text = ''
             MAP = get_map()
         if event.type == pygame.QUIT:
