@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 import Modules
 
-SCALE = 17
+SCALE = 10
 LON = 0
 LAT = 0
 
@@ -16,8 +16,8 @@ win = pygame.display.set_mode((w, h))
 types_of_map = ['map', 'sat', ','.join(['sat', 'skl'])]
 current_map = 0
 active = False
-text = ''
 search_bar = Modules.InputBox(675, 25, 350, 32)
+button_search = Modules.Button(675, 75, 350, 32, 'Искать')
 
 
 def search_map(longitude, lattitude, delta):
@@ -69,10 +69,13 @@ MAP = get_map()
 while True:
     for event in pygame.event.get():
         if search_bar.handle_event(event):
-            print(search_bar.text)
             LON, LAT = get_coords(search_bar.text)
             search_bar.text = ''
         search_bar.update()
+        if button_search.handle_event(event):
+            LON, LAT = get_coords(search_bar.text)
+            search_bar.text = ''
+            MAP = get_map()
         if event.type == pygame.QUIT:
             quit()
         elif event.type == pygame.KEYDOWN:
@@ -102,6 +105,7 @@ while True:
 
     # Ввод текста #####################################
     search_bar.draw(win)
+    button_search.draw(win)
     ###################################################
 
     pygame.display.flip()
