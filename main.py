@@ -2,18 +2,22 @@ import pygame
 import requests
 from PIL import Image
 from io import BytesIO
+import Modules
 
 SCALE = 17
-LON = 37.530887
-LAT = 55.703118
+LON = 0
+LAT = 0
 
-w, h = 600, 450
-rate = 32
+w, h = 1050, 500
+rate = 60
 pygame.init()
 clock = pygame.time.Clock()
 win = pygame.display.set_mode((w, h))
 types_of_map = ['map', 'sat', ','.join(['sat', 'skl'])]
 current_map = 0
+active = False
+text = ''
+search_bar = Modules.InputBox(675, 25, 350, 32)
 
 
 def search_map(longitude, lattitude, delta):
@@ -42,33 +46,63 @@ def get_map():
     return map_image
 
 
+def get_coords(address):
+    geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
+    geocoder_params = {
+        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "geocode": address,
+        "format": "json"}
+    response = requests.get(geocoder_api_server, params=geocoder_params)
+    if not response:
+        print(response.content)
+        print('No response')
+        return 0, 0
+    json_response = response.json()
+    toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+    toponym_coodrinates = toponym["Point"]["pos"]
+    toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
+    return float(toponym_longitude), float(toponym_lattitude)
+
+
 MAP = get_map()
 
 while True:
     for event in pygame.event.get():
+        if search_bar.handle_event(event):
+            print(search_bar.text)
+            LON, LAT = get_coords(search_bar.text)
+            search_bar.text = ''
+        search_bar.update()
         if event.type == pygame.QUIT:
             quit()
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 quit()
-            if event.key == pygame.K_PAGEUP:
+            elif event.key == pygame.K_PAGEUP:
                 SCALE = min(17, SCALE + 1)
-            if event.key == pygame.K_PAGEDOWN:
+            elif event.key == pygame.K_PAGEDOWN:
                 SCALE = max(0, SCALE - 1)
-            if event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT:
                 LON = (LON - 0.0005 * (18 - SCALE)) % 360
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 LON = (LON + 0.0005 * (18 - SCALE)) % 360
-            if event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP:
                 LAT = (LAT + 0.0005 * (18 - SCALE)) % 360
-            if event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN:
                 LAT = (LAT - 0.0005 * (18 - SCALE)) % 360
-            if event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_INSERT:
                 current_map += 1
                 current_map %= 3
             MAP = get_map()
 
     win.fill((0, 0, 0))
-    win.blit(MAP, (0, 0))
+    pygame.draw.rect(win, (155, 155, 155), pygame.Rect(0, 0, 650, 500))
+    win.blit(MAP, (25, 25))
+    pygame.draw.rect(win, (250, 250, 250), pygame.Rect(650, 0, 400, 500))
+
+    # Ввод текста #####################################
+    search_bar.draw(win)
+    ###################################################
+
     pygame.display.flip()
     clock.tick(rate)
