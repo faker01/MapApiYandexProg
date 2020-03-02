@@ -12,14 +12,18 @@ LAT_marker = 0
 
 w, h = 1050, 500
 rate = 60
+
 pygame.init()
 clock = pygame.time.Clock()
 win = pygame.display.set_mode((w, h))
-types_of_map = ['map', 'sat', ','.join(['sat', 'skl'])]
+
+types_of_map = ['map', 'sat', 'sat,skl']
 current_map = 0
 active = False
+
 search_bar = Modules.InputBox(675, 25, 350, 32)
 button_search = Modules.Button(675, 75, 350, 32, 'Искать')
+button_clear = Modules.Button(675, 125, 350, 32, 'Сбросить')
 
 
 def search_map(longitude, lattitude, longitude_marker, lattitude_marker, delta):
@@ -54,36 +58,47 @@ def get_coords(address):
     geocoder_params = {
         "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
         "geocode": address,
-        "format": "json"}
-    response = requests.get(geocoder_api_server, params=geocoder_params)
-    if not response:
-        print(response.content)
-        print('No response')
+        "format": "json"
+    }
+    try:
+        json_response = requests.get(geocoder_api_server, params=geocoder_params).json()
+        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+        toponym_coodrinates = toponym["Point"]["pos"]
+        toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
+        return float(toponym_longitude), float(toponym_lattitude)
+    except:
         return 0, 0
-    json_response = response.json()
-    toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
-    toponym_coodrinates = toponym["Point"]["pos"]
-    toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-    return float(toponym_longitude), float(toponym_lattitude)
 
 
 MAP = get_map()
 
 while True:
     for event in pygame.event.get():
+        
+        if button_clear.handle_event(event):
+            LON = 0
+            LAT = 0
+            LON_marker = 0
+            LAT_marker = 0
+            search_bar.text = ''
+            MAP = get_map()
+            
         if search_bar.handle_event(event):
             LON, LAT = get_coords(search_bar.text)
             LON_marker, LAT_marker = LON, LAT
             search_bar.text = ''
         search_bar.update()
+        
         if button_search.handle_event(event):
             LON, LAT = get_coords(search_bar.text)
             LON_marker, LAT_marker = LON, LAT
             search_bar.text = ''
             MAP = get_map()
+            
         if event.type == pygame.QUIT:
             quit()
-        elif event.type == pygame.KEYDOWN:
+            
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 quit()
             elif event.key == pygame.K_PAGEUP:
@@ -101,6 +116,7 @@ while True:
             elif event.key == pygame.K_INSERT:
                 current_map += 1
                 current_map %= 3
+                
             MAP = get_map()
 
     win.fill((0, 0, 0))
@@ -108,10 +124,9 @@ while True:
     win.blit(MAP, (25, 25))
     pygame.draw.rect(win, (250, 250, 250), pygame.Rect(650, 0, 400, 500))
 
-    # Ввод текста #####################################
     search_bar.draw(win)
+    button_clear.draw(win)
     button_search.draw(win)
-    ###################################################
 
     pygame.display.flip()
     clock.tick(rate)
