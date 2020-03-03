@@ -63,3 +63,22 @@ class Button:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         pg.draw.rect(screen, self.color, self.rect, 2)
+
+
+class TextDialog:
+    def __init__(self, x, y, w, h, text):
+        self.rect = pg.Rect(x, y, w, h)
+        self.color = COLOR_INACTIVE
+        self.text = text
+        self.font = pg.font.Font(None, 16)
+        self.txt_surface = self.font.render(text, True, self.color)
+
+    def set_text(self, text):
+        self.txt_surface = self.font.render(text, True, self.color)
+
+    def update(self):
+        pass
+
+    def draw(self, screen):
+        screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+        pg.draw.rect(screen, self.color, self.rect, 2)
