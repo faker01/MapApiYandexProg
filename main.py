@@ -67,7 +67,7 @@ def get_mail_address(toponym):
         ["Country"]["AdministrativeArea"]["SubAdministrativeArea"]["Locality"] \
         ["Thoroughfare"]["Premise"]["PostalCode"]["PostalCodeNumber"]
     except:
-        return ""
+        return ''
 
 
 def get_coords(address):
