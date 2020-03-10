@@ -102,6 +102,7 @@ while True:
             LAT_marker = 0
             search_bar.text = ''
             address.set_text('')
+            mail.set_text('')
             MAP = get_map()
 
         if search_bar.handle_event(event):
