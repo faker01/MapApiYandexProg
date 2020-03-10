@@ -82,3 +82,52 @@ class TextDialog:
     def draw(self, screen):
         screen.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
         pg.draw.rect(screen, self.color, self.rect, 2)
+
+
+class MailAddressUI:
+
+    def __init__(self, x, y, w, h):
+        self.state = False
+        self.text = ''
+        self.w, self.h = w, h
+        self.button = pg.Rect(x, y, int(w / 6), h)
+        self.rect = pg.Rect(x + int(w / 5), y, int(w / 5 * 4), h)
+
+    def handle_event(self, event):
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if self.button.collidepoint(*event.pos):
+                return True
+        return False
+
+    def set_text(self, text):
+        self.text = text
+        print(repr(self.text))
+
+    def draw(self, screen):
+        color = (COLOR_ACTIVE if self.state else COLOR_INACTIVE)
+        w, h = self.button.size
+        x, y = self.button.x, self.button.y
+        size = int(h / 3 * 2)
+
+        slider = pg.Surface((size, size))
+        pg.draw.rect(slider, color, pg.Rect(0, 0, size, size))
+        screen.blit(slider, (x - size + int((h + size) / 2) + (w + 2 * (size - int((h + size) / 2)) - size) * self.state, y - size + int((h + size) / 2)))
+        pg.draw.rect(screen, color, self.button, 2)
+        pg.draw.rect(screen, color, self.rect, 2)
+
+        iw, ih = int(self.w / 12), size
+        ix, iy = x + self.w - iw - 5, y - ih + int((h + ih) / 2)
+
+        pg.draw.rect(screen, COLOR_INACTIVE, (ix, iy, iw, ih))
+        pg.draw.lines(screen, (250, 250, 250), False, (
+            (ix, iy), (ix + int(iw / 2), iy + int(ih / 3 * 2)), (ix + iw, iy)
+        ), 3)
+        pg.draw.line(screen, (250, 250, 250), (ix, iy + ih), (ix + int(iw / 8 * 3), iy + int(ih / 2)), 3)
+        pg.draw.line(screen, (250, 250, 250), (ix + int(iw / 8 * 5) + 1, iy + int(ih / 2) + 1), (ix + iw, iy + ih), 3)
+
+        if self.state:
+            txt_surface = FONT.render(self.text, True, COLOR_ACTIVE)
+            screen.blit(txt_surface, (self.rect.x + 5, self.rect.y + 5))
+
+    def change_state(self):
+        self.state = int(not self.state)
