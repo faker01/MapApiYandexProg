@@ -2,7 +2,12 @@ import pygame
 import requests
 from PIL import Image
 from io import BytesIO
+import traceback
 import Modules
+
+
+from json import dumps
+
 
 SCALE = 10
 LON = 0
@@ -25,6 +30,8 @@ search_bar = Modules.InputBox(675, 25, 350, 32)
 button_search = Modules.Button(675, 75, 350, 32, 'Искать')
 button_clear = Modules.Button(675, 125, 350, 32, 'Сбросить')
 address = Modules.TextDialog(675, 175, 350, 17, '')
+
+mail = Modules.MailAddressUI(675, 215, 350, 32)
 
 
 def search_map(longitude, lattitude, longitude_marker, lattitude_marker, delta):
@@ -54,6 +61,15 @@ def get_map():
     return map_image
 
 
+def get_mail_address(toponym):
+    try:
+        return toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"] \
+        ["Country"]["AdministrativeArea"]["SubAdministrativeArea"]["Locality"] \
+        ["Thoroughfare"]["Premise"]["PostalCode"]["PostalCodeNumber"]
+    except:
+        return ""
+
+
 def get_coords(address):
     geocoder_api_server = "http://geocode-maps.yandex.ru/1.x/"
     geocoder_params = {
@@ -64,12 +80,14 @@ def get_coords(address):
     try:
         json_response = requests.get(geocoder_api_server, params=geocoder_params).json()
         toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+        toponym_mail = get_mail_address(toponym)
         toponym_coodrinates = toponym["Point"]["pos"]
-        toponym_address = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["text"]
+        toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
         toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-        return float(toponym_longitude), float(toponym_lattitude), toponym_address
+        return float(toponym_longitude), float(toponym_lattitude), toponym_address, toponym_mail
     except:
-        return 0, 0
+        traceback.print_exc()
+        return 0, 0, '', ''
 
 
 MAP = get_map()
@@ -87,20 +105,25 @@ while True:
             MAP = get_map()
 
         if search_bar.handle_event(event):
-            LON_marker, LAT_marker, top_address = get_coords(search_bar.text)
+            LON_marker, LAT_marker, top_address, mail_address = get_coords(search_bar.text)
             LON, LAT = LON_marker, LAT_marker
+            mail.set_text(mail_address)
             print(top_address)
             address.set_text(top_address)
             search_bar.text = ''
         search_bar.update()
 
         if button_search.handle_event(event):
-            LON_marker, LAT_marker, top_address = get_coords(search_bar.text)
+            LON_marker, LAT_marker, top_address, mail_address = get_coords(search_bar.text)
             LON, LAT = LON_marker, LAT_marker
+            mail.set_text(mail_address)
             print(top_address)
             address.set_text(top_address)
             search_bar.text = ''
             MAP = get_map()
+
+        if mail.handle_event(event):
+            mail.change_state()
 
         if event.type == pygame.QUIT:
             quit()
@@ -135,6 +158,8 @@ while True:
     button_clear.draw(win)
     button_search.draw(win)
     address.draw(win)
+    mail.draw(win)
 
     pygame.display.flip()
     clock.tick(rate)
+
