@@ -101,7 +101,6 @@ class MailAddressUI:
 
     def set_text(self, text):
         self.text = text
-        print(repr(self.text))
 
     def draw(self, screen):
         color = (COLOR_ACTIVE if self.state else COLOR_INACTIVE)
