@@ -100,6 +100,7 @@ class MailAddressUI:
         return False
 
     def set_text(self, text):
+        self.state = bool(self.state and text)
         self.text = text
 
     def draw(self, screen):
